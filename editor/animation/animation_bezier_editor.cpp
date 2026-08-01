@@ -1394,6 +1394,25 @@ void AnimationBezierTrackEdit::gui_input(const Ref<InputEvent> &p_event) {
 			}
 		}
 	}
+	
+	if(mb.is_valid() && mb->is_alt_pressed()) {
+		const float zoom_amount = 1.25;
+		//There seems to be a minimum size to the bezier editor, so calculating mouse_ratio shouldn't ever divide by 0 
+		if (mb->get_button_index() == MouseButton::WHEEL_DOWN) {
+			float timeline_height = (1 / 0.9) * timeline_v_zoom * (get_size().height - timeline->get_size().height);
+			float mouse_ratio = mb->get_position().y / get_size().y;
+			timeline_v_scroll += timeline_height*(mouse_ratio-0.5) * (zoom_amount-1);
+			timeline_v_zoom *= zoom_amount;
+			queue_redraw();
+		}
+		if (mb->get_button_index() == MouseButton::WHEEL_UP) {
+			float timeline_height = (1 / 0.9) * timeline_v_zoom * (get_size().height - timeline->get_size().height);
+			float mouse_ratio = mb->get_position().y / get_size().y;
+			timeline_v_scroll -= timeline_height*(mouse_ratio-0.5) * (1-(1/zoom_amount));
+			timeline_v_zoom *= 1/zoom_amount;
+			queue_redraw();
+		}
+	}
 
 	if (mb.is_valid() && mb->is_pressed() && mb->get_button_index() == MouseButton::LEFT) {
 		Point2 pos = mb->get_position();
